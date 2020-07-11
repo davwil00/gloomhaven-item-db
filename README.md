@@ -1,6 +1,11 @@
 # Gloomhaven Item DB
 
-https://heisch.github.io/gloomhaven-item-db/
+## Develeopment setup
+After cloning this repo run the following to download the any2cards assets
+```bash
+git submodule init
+git submodule update
+```
 
 ## Description
 
