@@ -1,16 +1,18 @@
 import React, {Component} from 'react';
-import {Button, Checkbox, Form, Header, Icon, Image, Input, Message, Modal, Popup, Tab, Table} from 'semantic-ui-react';
+import {Button, Checkbox, Form, Header, Icon, Image, Message, Modal, Popup, Tab, Table} from 'semantic-ui-react';
 import {Helpers} from "./helpers";
 import { SortDirection, SortProperty, SoloClassShorthand, GloomhavenItem, GloomhavenItemSlot, GloomhavenItemSourceType } from "./State/Types";
 import { SpoilerFilter, OldSpoilerFilter } from './State/SpoilerFilter';
 import { connect } from 'react-redux';
 import { ItemViewState } from './State/ItemViewState';
-import { storeItems, storeImportModalOpen, storeFilterSlot, storeSortingProperty, storeFilterSearch, storeShareLockSpoilerPanel } from './State/ItemViewState';
-import { storeSpoilerFilter, storeProsperity, storeSoloClass, storeItem, storeItemsInUse, storeAll, storeEnableStoreStockManagement, storeDisplayAs, storeDiscount } from './State/SpoilerFilter';
+import { storeItems, storeImportModalOpen, storeSortingProperty } from './State/ItemViewState';
+import { storeSpoilerFilter, storeProsperity, storeSoloClass, storeItem, storeItemsInUse, storeAll, storeEnableStoreStockManagement } from './State/SpoilerFilter';
+import { getItemImageSrc, getSlotImageSrc } from './helpers/ImageHelper';
+import SearchOptions from './search-options/SearchOptionsContainer';
+import ShareTab from './share/ShareTabContainer';
+import SpoilerFilters from './spoiler-filters/SpoilerFiltersContainer';
 
-const gloomhavenItemSlots: Array<GloomhavenItemSlot> = ['Head', 'Body', 'Legs', 'One Hand', 'Two Hands', 'Small Item'];
-
-const GloomhavenSoloClassShorthands: Array<SoloClassShorthand> = ['BR', 'TI', 'SW', 'SC', 'CH', 'MT', 'SK', 'QM', 'SU', 'NS', 'PH', 'BE', 'SS', 'DS', 'SB', 'EL', 'BT'];
+export const gloomhavenItemSlots: Array<GloomhavenItemSlot> = ['Head', 'Body', 'Legs', 'One Hand', 'Two Hands', 'Small Item'];
 
 interface ItemViewProps { itemViewState: ItemViewState, spoilerFilter: SpoilerFilter, dispatch: any}
 
@@ -69,7 +71,7 @@ class ItemView extends Component<ItemViewProps, ItemViewState> {
         sources = Helpers.uniqueArray(sources);
 
         this.props.dispatch(storeItems(items));
-        this.restoreFromLocalStorage();
+        this.restoreFromLocalStorage(); // TODO restore from gist
 
         this.props.dispatch(storeImportModalOpen(ItemView.parseHash() != undefined));
     }
@@ -145,61 +147,8 @@ class ItemView extends Component<ItemViewProps, ItemViewState> {
         return source.replace(/{(.{2})}/, (m, m1) => '<img class="icon" src="'+require('./img/classes/'+m1+'.png')+'" alt="" />');
     }
 
-    static getSlotImageSrc(slot: GloomhavenItemSlot):string {
-        let src: string;
-        switch (slot) {
-            case "Head":
-                src = 'head';
-                break;
-            case "Body":
-                src = 'body';
-                break;
-            case "Legs":
-                src = 'legs';
-                break;
-            case "One Hand":
-                src = '1h';
-                break;
-            case "Two Hands":
-                src = '2h';
-                break;
-            case "Small Item":
-                src = 'small';
-                break;
-            default:
-                throw new Error(`item slot unrecognized: ${slot}`);
-        }
-        return require('./img/icons/equipment_slot/'+src+'.png');
-    }
-
-    static getItemImageSrc(item: GloomhavenItem): string {
-        let src = '';
-        let name = item.name.toLowerCase().replace(/\s/g, '-').replace(/'/, '');
-        if (item.id >= 64) {
-            src = require('../vendor/any2cards/images/items/64-151/' + name + '.png');
-        } else if (item.id <= 14) {
-            src = require('../vendor/any2cards/images/items/1-14/' + name + '.png');
-        } else {
-            let range_from = item.id % 7 === 0
-                ? Math.floor((item.id - 1) / 7) * 7
-                : Math.floor((item.id) / 7) * 7;
-            src = require('../vendor/any2cards/images/items/' + (range_from + 1) + '-' + (range_from + 7) + '/' + name + '.png');
-        }
-        return src;
-    }
-
-    setProsperityFilter(prosperity: number) {
-        this.props.dispatch(storeProsperity(prosperity));
-    }
-
-    setFilterSlot(slot?: GloomhavenItemSlot) {
-        const state = this.props.itemViewState;
-        state.filter.slot = slot;
-        this.props.dispatch(storeFilterSlot(slot));
-    }
-
     setSorting(property: SortProperty) {
-        const {sorting} = this.props.itemViewState;;
+        const {sorting} = this.props.itemViewState;
         if (property === sorting.property) {
             sorting.direction = sorting.direction === SortDirection.ascending ? SortDirection.descending : SortDirection.ascending;
         } else {
@@ -207,26 +156,6 @@ class ItemView extends Component<ItemViewProps, ItemViewState> {
         }
         sorting.property = property;
         this.props.dispatch(storeSortingProperty(property));
-    }
-
-    toggleClassFilter(key: SoloClassShorthand) {
-        const {soloClass} = this.props.spoilerFilter;
-        if (soloClass.includes(key)) {
-            soloClass.splice(soloClass.indexOf(key), 1);
-        } else {
-            soloClass.push(key)
-        }
-        this.props.dispatch(storeSoloClass(soloClass));
-    }
-
-    toggleItemFilter(key: number) {
-        const {item} = this.props.spoilerFilter;
-        if (item.includes(key)) {
-            item.splice(item.indexOf(key), 1);
-        } else {
-            item.push(key)
-        }
-        this.props.dispatch(storeItem(item));
     }
 
     getSpoilerFilteredItems() {
@@ -325,213 +254,6 @@ class ItemView extends Component<ItemViewProps, ItemViewState> {
         this.props.dispatch(storeAll(!all));
     }
 
-    renderShareTab() {
-        const {shareLockSpoilerPanel} = this.props.itemViewState;
-        const spoilerFilter = this.props.spoilerFilter;
-
-        const shareUrl = location.origin + location.pathname + '#' + btoa(JSON.stringify({
-            ...spoilerFilter,
-            lockSpoilerPanel: shareLockSpoilerPanel
-        }));
-
-        return (
-            <React.Fragment>
-                <p>Here you can generate a link to this app with your current spoiler configuration.</p>
-                <Form>
-                    <Form.Group inline>
-                        <label htmlFor={'share-spoiler-toggle'}>Deactivate spoiler configuration panel for people
-                            following your shared link.</label>
-                        <Form.Checkbox id={'share-spoiler-toggle'} toggle className={'share-spoiler-toggle'}
-                                       checked={shareLockSpoilerPanel}
-                                       onChange={() => this.props.dispatch( storeShareLockSpoilerPanel(!shareLockSpoilerPanel))}/>
-                    </Form.Group>
-                    {shareLockSpoilerPanel && false && <Message negative>
-                        <Icon name="exclamation triangle"/>Do not open the link yourself or you will not be able to
-                        change any settings anymore
-                    </Message>}
-                    <Form.Group>
-                        <Form.Input id={'share-url-input'} width={14} value={shareUrl}/>
-                        <Form.Button width={2} onClick={() => {
-                            (document.getElementById('share-url-input') as HTMLInputElement).select();
-                            document.execCommand("copy");
-                        }}>Copy</Form.Button>
-                    </Form.Group>
-                </Form>
-            </React.Fragment>
-        );
-    }
-
-    renderSpoilerFilters() {
-
-        const spoilerFilter = this.props.spoilerFilter;
-        const {enableStoreStockManagement, all} = spoilerFilter;
-
-        return (
-            <React.Fragment>
-
-                <Form>
-
-                    <Form.Group inline>
-                        <label>Respecting Spoiler Settings:</label>
-                        <Button
-                            color={all ? 'red' : 'blue'}
-                            onClick={() => this.toggleShowAll()}
-                        >
-                            {all
-                                ? <React.Fragment><Icon name={'eye'}/> disabled</React.Fragment>
-                                : <React.Fragment><Icon name={'eye slash'}/> enabled</React.Fragment>
-                            }
-                        </Button>
-                    </Form.Group>
-
-                    <Form.Group inline>
-                        <label>Enable Store Stock Management:</label>
-                        <Form.Checkbox
-                            toggle
-                            checked={enableStoreStockManagement}
-                            onClick={() => {
-                                this.props.dispatch(storeEnableStoreStockManagement(!spoilerFilter.enableStoreStockManagement));
-                            }}/>
-                    </Form.Group>
-
-                    <Form.Group inline>
-                        <label>Prosperity:</label>
-                        {[...Array(9).keys()].map(index => {
-                            const prosperity = index + 1;
-                            return (
-                                <Form.Radio key={index} label={prosperity}
-                                            checked={spoilerFilter.prosperity === prosperity}
-                                            onChange={() => this.setProsperityFilter(prosperity)}/>
-                            )})}
-                    </Form.Group>
-
-                    {spoilerFilter.prosperity < 9 && <Form.Group inline className={'inline-break'}>
-                        <label>Prosperity Items:</label>
-                        {/* 15-70 prosperity 2-9*/}
-                        {[...Array(70 - (spoilerFilter.prosperity + 1) * 7).keys()].map((val) => {
-                            const id = val + 1 + (spoilerFilter.prosperity + 1) * 7;
-                            return (
-                                <Form.Checkbox key={val} label={'#' + (id + '').padStart(3, '0')}
-                                               checked={spoilerFilter.item.includes(id)}
-                                               onChange={() => this.toggleItemFilter(id)}/>
-                            )
-                        })}
-                    </Form.Group>}
-
-                    <Form.Group inline className={'inline-break'}>
-                        <label>Random Item Design:</label>
-                        {/* 71-95 random item design*/}
-                        {[...Array(25).keys()].map((val) => {
-                            const id = val + 71;
-                            return (
-                                <Form.Checkbox key={val} label={'#' + (id + '').padStart(3, '0')}
-                                               checked={spoilerFilter.item.includes(id)}
-                                               onChange={() => this.toggleItemFilter(id)}/>
-                            )
-                        })}
-                    </Form.Group>
-
-
-                    <Form.Group inline className={'inline-break'}>
-                        <label>Other Items:</label>
-                        {/* 96-133 other items*/}
-                        {[...Array(38).keys()].map((val) => {
-                            const id = val + 96;
-                            return (
-                                <Form.Checkbox key={val} label={'#' + (id + '').padStart(3, '0')}
-                                               checked={spoilerFilter.item.includes(id)}
-                                               onChange={() => this.toggleItemFilter(id)}/>
-                            )
-                        })}
-                    </Form.Group>
-
-                    <Form.Group inline className={'inline-break'}>
-                        <label>Solo Class Items:</label>
-                        {GloomhavenSoloClassShorthands.map(key => (
-                            <Image key={key} src={require(`./img/classes/${key}.png`)}
-                                   className={'icon' + (spoilerFilter.soloClass.includes(key) ? '' : ' disabled')}
-                                   onClick={() => this.toggleClassFilter(key)}/>
-                        ))}
-                    </Form.Group>
-
-                </Form>
-            </React.Fragment>
-        );
-    }
-
-    renderSearchOptions() {
-        const {filter, sorting} = this.props.itemViewState;
-        const { displayAs, discount } = this.props.spoilerFilter;
-        return (
-            <React.Fragment>
-
-                <Form>
-                    <Form.Group inline>
-                        <label>Render as:</label>
-                        <Button.Group>
-                            <Button color={displayAs === 'list' ? 'blue' : undefined} onClick={() => {
-                                    this.props.dispatch(storeDisplayAs('list'));
-                                }}>List</Button>
-                            <Button.Or/>
-                            <Button color={displayAs === 'images' ? 'blue' : undefined} onClick={() => {
-                                    this.props.dispatch(storeDisplayAs('images'));
-                                }}>Images</Button>
-                        </Button.Group>
-                    </Form.Group>
-                    {displayAs === 'list' && <Form.Group inline>
-                        <label>Reputation Discount:</label>
-                        <Form.Select value={discount}
-                                options={[
-                                    {value: -5, text: "-5 gold"}, // (19 - 20)
-                                    {value: -4, text: "-4 gold"}, // (15 - 18)
-                                    {value: -3, text: "-3 gold"}, // (11 - 14)
-                                    {value: -2, text: "-2 gold"}, // (7 - 13)
-                                    {value: -1, text: "-1 gold"}, // (3 - 6)
-                                    {value: 0, text: "none"}, // (-2 - 2)
-                                    {value: 1, text: "+1 gold"}, // (-3 - -6)
-                                    {value: 2, text: "+2 gold"}, // (-7 - -10)
-                                    {value: 3, text: "+3 gold"}, // (-11 - -14)
-                                    {value: 4, text: "+4 gold"}, // (-15 - -18)
-                                    {value: 5, text: "+5 gold"}, // (-19 - -20)
-                                ]}
-                                onChange={(obj, e) => {
-                                    this.props.dispatch(storeDiscount(typeof e.value === 'number' ? e.value : 0));
-                                }}
-                        />
-                    </Form.Group>}
-                    {displayAs === 'images' && <Form.Group inline>
-                        <label>Sort By:</label>
-                        <Form.Select
-                            value={sorting.property}
-                            options={[
-                                {value: 'id', text: 'Item Number'},
-                                {value: 'slot', text: 'Equipment Slot'},
-                                {value: 'cost', text: 'Cost'},
-                                {value: 'name', text: 'Name'},
-                                {value: 'source', text: 'Source'},
-                                {value: 'use', text: 'Use'}
-                            ]}
-                            onChange={(obj, e) => this.setSorting(e.value as SortProperty)}
-                        />
-                    </Form.Group>}
-                    <Form.Group inline>
-                        <label>Filter Slot:</label>
-                        <Form.Radio label={'all'} checked={filter.slot === undefined} onChange={() => this.setFilterSlot(undefined)}/>
-                        {gloomhavenItemSlots.map(slot => <Form.Radio key={slot} label={<img className={'icon'} src={ItemView.getSlotImageSrc(slot)} alt={slot}/>} checked={filter.slot === slot} onChange={() => this.setFilterSlot(slot)} alt={slot}/>)}
-                    </Form.Group>
-                    <Form.Group inline>
-                        <label>Find Item:</label>
-                        <Input
-                            value={filter.search}
-                            onChange={(e) => this.props.dispatch(storeFilterSearch(e.target.value))}
-                            icon={{name: 'close', link: true, onClick: () => this.props.dispatch(storeFilterSearch(''))}}
-                            placeholder={'Search...'}
-                        />
-                    </Form.Group>
-                </Form>
-            </React.Fragment>
-        );
-    }
 
     static renderSummon(item: GloomhavenItem) {
         return item.summon === undefined ? null : (
@@ -555,7 +277,7 @@ class ItemView extends Component<ItemViewProps, ItemViewState> {
                 {items.map(item => (
                     <div key={item.id} className={'item-card-wrapper'}>
                         <img key={item.id}
-                            src={ItemView.getItemImageSrc(item)}
+                            src={getItemImageSrc(item)}
                             alt={item.name}
                             className={'item-card'}/>
 
@@ -605,7 +327,7 @@ class ItemView extends Component<ItemViewProps, ItemViewState> {
                                     <Table.Row key={item.id}>
                                         <Table.Cell className={'id-col'} textAlign={'right'}>#{(item.id + '').padStart(3, '0')}</Table.Cell>
                                         <Table.Cell className={'name-col'}>{item.name}</Table.Cell>
-                                        <Table.Cell className={'slot-col'} textAlign={'center'}><Image src={ItemView.getSlotImageSrc(item.slot)}/></Table.Cell>
+                                        <Table.Cell className={'slot-col'} textAlign={'center'}><Image src={getSlotImageSrc(item.slot)}/></Table.Cell>
                                         <Table.Cell className={'cost-col'} textAlign={'right'}>{cost}</Table.Cell>
                                         <Table.Cell className={'use-col'} textAlign={'center'}>
                                             {item.spent && <img className={'icon'} src={require('./img/icons/general/spent.png')} alt={'icon spent'}/>}
@@ -628,7 +350,6 @@ class ItemView extends Component<ItemViewProps, ItemViewState> {
                                             {enableStoreStockManagement
                                                 ? [...Array(item.count).keys()].map(index =>
                                                     <Checkbox key={index}
-                                                              toggle
                                                               disabled={lockSpoilerPanel}
                                                               checked={!!(itemsInUse[item.id] & Math.pow(2, index))}
                                                               onChange={() => this.toggleItemInUse(item.id, Math.pow(2, index))}/>
@@ -646,8 +367,7 @@ class ItemView extends Component<ItemViewProps, ItemViewState> {
 
         return (
             <React.Fragment>
-
-                {this.renderSearchOptions()}
+                <SearchOptions />
 
                 {all &&  (
                     <Message negative>
@@ -669,11 +389,11 @@ class ItemView extends Component<ItemViewProps, ItemViewState> {
 
         let panes = [
             { menuItem: 'Item List', render: () => <Tab.Pane className={all ? 'spoiler' : ''}>{this.renderTable()}</Tab.Pane> },
-            { menuItem: 'Spoiler Configuration', render: () => <Tab.Pane className={all ? 'spoiler' : ''}>{this.renderSpoilerFilters()}</Tab.Pane>},
+            { menuItem: 'Configuration', render: () => <Tab.Pane className={all ? 'spoiler' : ''}><SpoilerFilters/></Tab.Pane>},
             {
                 menuItem: 'Share',
                 render: () => <Tab.Pane
-                    className={all ? 'spoiler' : ''}>{this.renderShareTab()}</Tab.Pane>
+                    className={all ? 'spoiler' : ''}><ShareTab/></Tab.Pane>
             },
         ];
 

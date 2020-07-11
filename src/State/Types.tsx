@@ -35,3 +35,12 @@ export interface GloomhavenItem {
     }
 }
 
+export interface SortState {
+    direction: SortDirection
+    property: SortProperty
+}
+
+export interface FilterState {
+    slot?: GloomhavenItemSlot
+    search: string
+}

@@ -1,4 +1,4 @@
-import { GloomhavenItemSlot, SortDirection, SortProperty, GloomhavenItem } from "./Types";
+import { GloomhavenItemSlot, SortDirection, SortProperty, GloomhavenItem, SortState, FilterState } from "./Types";
 
 export const STORE_ITEMS = 'STORE_ITEMS';
 export const STORE_FILTER_SLOT = 'STORE_FILTER_SLOT';
@@ -34,14 +34,8 @@ export function storeShareLockSpoilerPanel(shareLockSpoilerPanel: boolean) {
 
 export interface ItemViewState {
     items: Array<GloomhavenItem>
-    filter: {
-        slot?: GloomhavenItemSlot
-        search: string
-    }
-    sorting: {
-        direction: SortDirection
-        property: SortProperty
-    }
+    filter: FilterState,
+    sorting: SortState,
     importModalOpen: boolean
     shareLockSpoilerPanel: boolean
 }
@@ -60,6 +54,15 @@ const initialItemViewState : ItemViewState = {
     shareLockSpoilerPanel: false
 };
 
+
+const getSortDirection = (property: SortProperty, sorting: SortState): SortDirection => {
+    if (property === sorting.property) {
+        return sorting.direction === SortDirection.ascending ? SortDirection.descending : SortDirection.ascending;
+    } else {
+        return SortDirection.ascending;
+    }
+}
+
 export function itemViewState(state = initialItemViewState, action:any) {
     switch (action.type)
     {
@@ -70,7 +73,7 @@ export function itemViewState(state = initialItemViewState, action:any) {
         case STORE_FILTER_SEARCH:
             return { ...state, filter: { ...state.filter, search: action.search}};
         case STORE_SORTING_PROPERTY:
-            return { ...state, sorting: { ...state.sorting, priority: action.priority}};
+            return { ...state, sorting: { direction: getSortDirection(action.property, state.sorting), property: action.property, }};
         case STORE_IMPORT_MODAL_OPEN:
             return { ...state, importModalOpen: action.importModalOpen};
         case STORE_SHARE_LOCK_SPOILER_PANEL:
