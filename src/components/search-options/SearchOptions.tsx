@@ -7,18 +7,18 @@ import { getSlotImageSrc } from "../../helpers/ImageHelper";
 type Props = {
     filter: FilterState,
     sorting: SortState
-    displayAs: ItemViewDisplayType,
+    displayType: ItemViewDisplayType,
     discount: number,
-    storeDisplayAs: (displayAs: string) => {},
-    storeDiscount: (discount: number) => {},
-    storeSortingProperty: (property: SortProperty) => {},
-    storeFilterSlot: (slot?: GloomhavenItemSlot) => {},
-    storeFilterSearch: (search: string) => {},
+    storeDisplayType: (displayType: ItemViewDisplayType) => void,
+    storeDiscount: (discount: number) => void,
+    storeSortingProperty: (property: SortProperty) => void,
+    storeFilterSlot: (slot?: GloomhavenItemSlot) => void,
+    storeFilterSearch: (search: string) => void,
 }
 
 class SearchOptions extends Component<Props> {
     render() {
-        const { displayAs, discount, sorting, filter } = this.props;
+        const { displayType, discount, sorting, filter } = this.props;
         return (
             <React.Fragment>
 
@@ -26,16 +26,16 @@ class SearchOptions extends Component<Props> {
                     <Form.Group inline>
                         <label>Render as:</label>
                         <Button.Group>
-                            <Button color={displayAs === 'list' ? 'blue' : undefined} onClick={() => {
-                                    this.props.storeDisplayAs('list');
+                            <Button color={displayType === 'list' ? 'blue' : undefined} onClick={() => {
+                                    this.props.storeDisplayType('list');
                                 }}>List</Button>
                             <Button.Or/>
-                            <Button color={displayAs === 'images' ? 'blue' : undefined} onClick={() => {
-                                    this.props.storeDisplayAs('images');
+                            <Button color={displayType === 'images' ? 'blue' : undefined} onClick={() => {
+                                    this.props.storeDisplayType('images');
                                 }}>Images</Button>
                         </Button.Group>
                     </Form.Group>
-                    {displayAs === 'images' && <Form.Group inline>
+                    {displayType === 'images' && <Form.Group inline>
                         <label>Sort By:</label>
                         <Form.Select
                             value={sorting.property}

@@ -5,9 +5,9 @@ export const STORE_FILTER_SLOT = 'STORE_FILTER_SLOT';
 export const STORE_FILTER_SEARCH = 'STORE_FILTER_SEARCH';
 export const STORE_SORTING_PROPERTY = 'STORE_SORTING_PROPERTY'
 export const STORE_IMPORT_MODAL_OPEN = 'STORE_IMPORT_MODAL_OPEN';
-export const STORE_SHARE_LOCK_SPOILER_PANEL = 'STORE_SHARE_LOCK_SPOILER_PANEL';
-export const SHOW_BUY_ITEM_MODAL = "SHOW_BUY_ITEM_MODAL"
-export const CLOSE_BUY_ITEM_MODAL = "CLOSE_BUY_ITEM_MODAL"
+export const STORE_DISPLAY_TYPE = 'STORE_DISPLAY_TYPE';
+export const SHOW_BUY_ITEM_MODAL = "SHOW_BUY_ITEM_MODAL";
+export const CLOSE_BUY_ITEM_MODAL = "CLOSE_BUY_ITEM_MODAL";
 
 export function storeFilterSlot(slot?: GloomhavenItemSlot) {
     return { type: STORE_FILTER_SLOT, slot}
@@ -21,8 +21,8 @@ export function storeSortingProperty(property: SortProperty) {
     return { type: STORE_SORTING_PROPERTY, property}
 }
 
-export function storeShareLockSpoilerPanel(shareLockSpoilerPanel: boolean) {
-    return { type: STORE_SHARE_LOCK_SPOILER_PANEL, shareLockSpoilerPanel}
+export function storeDisplayType(displayType: ItemViewDisplayType) {
+    return { type: STORE_DISPLAY_TYPE, displayType }
 }
 
 export function showBuyItemModal(itemId: number) {
@@ -74,12 +74,12 @@ export function itemViewState(state = initialItemViewState, action:any) {
             return { ...state, sorting: { direction: getSortDirection(action.property, state.sorting), property: action.property, }};
         case STORE_IMPORT_MODAL_OPEN:
             return { ...state, importModalOpen: action.importModalOpen};
-        case STORE_SHARE_LOCK_SPOILER_PANEL:
-            return { ...state, shareLockSpoilerPanel: action.shareLockSpoilerPanel};
+        case STORE_DISPLAY_TYPE:
+            return { ...state, displayType: action.displayType};
         case SHOW_BUY_ITEM_MODAL:
             return { ...state, showBuyItemModal: true, buyItemId: action.itemId };
         case CLOSE_BUY_ITEM_MODAL:
-            return { ...state, showBuyItemModal: false}
+            return { ...state, showBuyItemModal: false};
         default:
             return state;
     }

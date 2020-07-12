@@ -1,52 +1,45 @@
-import { Component } from "react";
-import ConfigurationState from "../../State/ConfigurationState";
 import React from "react";
-import { Form, Message, Icon } from "semantic-ui-react";
-import { storeShareLockSpoilerPanel } from "../../State/ItemViewState";
+import ConfigurationState from "../../State/ConfigurationState";
+import { Button, TextArea, Form } from "semantic-ui-react";
+import { useSelector } from "react-redux";
 
-type Props = {
-    shareLockSpoilerPanel: boolean,
-    spoilerFilter: ConfigurationState,
-    storeShareLockSpoilerPanel: (shareLockSpoilerPanel: boolean) => {}
+import { request } from '@octokit/request';
+
+const save = (configurationState: ConfigurationState) => {
+    const requestWithAuth = request.defaults({
+        headers: {
+            authorization: `token ${process.env.REACT_APP_GITHUB_TOKEN}`,
+        },
+    });
+
+    const result = requestWithAuth(`PATCH /gists/${process.env.REACT_APP_GIST_ID}`, {
+        gist_id: process.env.REACT_APP_GIST_ID,
+        files: {
+            'gloomhaven-shop.json': {
+                content: JSON.stringify(configurationState, null, 2)
+            }
+        }
+    }).then(response => {
+        if (response.status === 200) {
+            alert('Saved');
+        } else {
+            console.error(response.status);
+            console.error(response.data);
+        }
+    }).catch(err => console.error(err));
 }
 
-class SaveTab extends Component<Props> {
-    render() {
-        const {shareLockSpoilerPanel} = this.props;
-        const spoilerFilter = this.props.spoilerFilter;
+function SaveTab() {
+    const configurationState = useSelector<any, ConfigurationState>(state => state.configurationState)
 
-        const shareUrl = location.origin + location.pathname + '#' + btoa(JSON.stringify({
-            ...spoilerFilter,
-            lockSpoilerPanel: shareLockSpoilerPanel
-        }));
-
-        return (
-            <React.Fragment>
-                <p>Here you can generate a link to this app with your current spoiler configuration.</p>
-                <Form>
-                    <Form.Group inline>
-                        <label htmlFor={'share-spoiler-toggle'}>Deactivate spoiler configuration panel for people
-                            following your shared link.</label>
-                        <Form.Checkbox id={'share-spoiler-toggle'} toggle className={'share-spoiler-toggle'}
-                                       checked={shareLockSpoilerPanel}
-                                       onChange={() => this.props.storeShareLockSpoilerPanel(!shareLockSpoilerPanel)}/>
-                    </Form.Group>
-                    {shareLockSpoilerPanel && false && <Message negative>
-                        <Icon name="exclamation triangle"/>Do not open the link yourself or you will not be able to
-                        change any settings anymore
-                    </Message>}
-                    <Form.Group>
-                        <Form.Input id={'share-url-input'} width={14} value={shareUrl}/>
-                        <Form.Button width={2} onClick={() => {
-                            (document.getElementById('share-url-input') as HTMLInputElement).select();
-                            document.execCommand("copy");
-                        }}>Copy</Form.Button>
-                    </Form.Group>
-                </Form>
-            </React.Fragment>
-        );
-    }
-
+    return (
+        <React.Fragment>
+            <Form>
+                <TextArea label="Config" value={JSON.stringify(configurationState, null, 2)} rows={20}/>
+                <Button onClick={() => save(configurationState)}>Save</Button>
+            </Form>
+        </React.Fragment>
+    )
 }
 
 export default SaveTab

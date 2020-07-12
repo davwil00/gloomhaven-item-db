@@ -115,16 +115,17 @@ class ItemView extends Component<Props, ModalState> {
                         </Table.Cell>
                         <Table.Cell className={'store-inventory-col'} textAlign={'right'}>
                             {itemsInUse[item.id] ? 
-                            <Button as='div' labelPosition='right' onClick={() => showBuyItemModal(item.id)}>
-                                <Button icon>
-                                <Popup trigger={<Icon name="add user" />}
-                                        content={itemsInUse[item.id]}
-                                        position="right center"/>
-                                </Button>
-                                <Label as='a' basic pointing='left'>
-                                    <span className="nowrap">{item.count - itemsInUse[item.id].length} / {item.count}</span>
-                                </Label>
-                            </Button>
+                            <Popup trigger={
+                                <Button as='div' labelPosition='right' onClick={() => showBuyItemModal(item.id)}>
+                                    <Button icon>
+                                        <Icon name="add user" />
+                                    </Button>
+                                    <Label as='a' basic pointing='left'>
+                                        <span className="nowrap">{item.count - itemsInUse[item.id].length} / {item.count}</span>
+                                    </Label>
+                                </Button>}
+                                content={itemsInUse[item.id].join(', ')} 
+                                position="right center"/>
                             : 
                             <Button as='div' labelPosition='right' onClick={() => showBuyItemModal(item.id)}>
                                 <Button icon>

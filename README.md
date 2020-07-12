@@ -6,6 +6,7 @@ After cloning this repo run the following to download the any2cards assets
 git submodule init
 git submodule update
 ```
+Copy `.env.template` to `.env` and set the github token and gist id for persisting config
 
 ## Description
 

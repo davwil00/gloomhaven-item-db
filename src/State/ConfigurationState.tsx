@@ -35,10 +35,6 @@ export function storeEnableStoreStockManagement(enableStoreStockManagement: bool
     return {type: STORE_ENABLE_STORE_STOCK_MANAGEMENT, enableStoreStockManagement};
 }
 
-export function storeDisplayAs(displayAs: string) {
-    return {type: STORE_DISPLAY_AS, displayAs};
-}
-
 export function storeDiscount(discount: number) {
     return {type: STORE_DISCOUNT, discount};
 }
@@ -54,9 +50,7 @@ export interface ConfigurationState {
     itemsInUse: ItemsInUse
     soloClass: Array<SoloClassShorthand>
     discount: number
-    displayAs: ItemViewDisplayType
     enableStoreStockManagement: boolean
-    lockSpoilerPanel: boolean
 }
 
 const initialConfigurationState: ConfigurationState = {
@@ -66,9 +60,7 @@ const initialConfigurationState: ConfigurationState = {
     itemsInUse: {},
     soloClass: [],
     discount: 0,
-    displayAs: 'list',
     enableStoreStockManagement: false,
-    lockSpoilerPanel: false,
 };
 
 const updateItemsInUse = (itemsInUse: ItemsInUse, itemId: number, playerName: string): ItemsInUse => {
@@ -98,8 +90,6 @@ export function configurationState(state = initialConfigurationState, action:any
             return newState = { ...state, all: action.all};
         case STORE_ENABLE_STORE_STOCK_MANAGEMENT:
             return newState = {...state, enableStoreStockManagement: action.enableStoreStockManagement};
-        case STORE_DISPLAY_AS:
-            return newState = {...state, displayAs: action.displayAs};
         case STORE_DISCOUNT:
             return newState = {...state, discount: action.discount};
         case BUY_ITEM:
