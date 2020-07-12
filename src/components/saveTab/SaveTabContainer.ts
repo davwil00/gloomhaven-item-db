@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import ShareTab from "./ShareTab";
+import SaveTab from "./SaveTab";
 import { storeShareLockSpoilerPanel } from "../../State/ItemViewState";
 
 const mapStateToProps = (state: any) => ({
@@ -11,4 +11,4 @@ const mapDispatchToProps = (dispatch: any) => ({
     storeShareLockSpoilerPanel: (shareLockSpoilerPanel: boolean) => dispatch(storeShareLockSpoilerPanel(shareLockSpoilerPanel))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(ShareTab)
+export default connect(mapStateToProps, mapDispatchToProps)(SaveTab)

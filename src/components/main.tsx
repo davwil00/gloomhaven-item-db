@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Header, Button, Icon, Tab } from "semantic-ui-react";
 import { ConfigurationState, storeConfiguration } from "../State/ConfigurationState";
 import { useDispatch } from "react-redux";
-import ShareTab from "./share-tab/ShareTabContainer";
+import SaveTab from "./saveTab/SaveTabContainer";
 import Configuration from "./configuration/ConfigurationContainer";
 import ItemView from "./item-view/ItemViewContainer";
 
@@ -63,8 +63,8 @@ export function Main() {
         { menuItem: 'Item List', render: () => <Tab.Pane><ItemView/></Tab.Pane> },
         { menuItem: 'Configuration', render: () => <Tab.Pane><Configuration/></Tab.Pane>},
         {
-            menuItem: 'Share',
-            render: () => <Tab.Pane><ShareTab/></Tab.Pane>
+            menuItem: 'Save',
+            render: () => <Tab.Pane><SaveTab/></Tab.Pane>
         }
     ];
 

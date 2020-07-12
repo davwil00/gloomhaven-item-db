@@ -5,11 +5,11 @@ export const STORE_CONFIGURATION = 'STORE_CONFIGURATION';
 export const STORE_PROSPERITY = 'STORE_PROSPERITY';
 export const STORE_SOLO_CLASS = 'STORE_SOLO_CLASS'
 export const STORE_PROSPERITY_ITEM = 'STORE_ITEM'
-export const STORE_ITEMS_IN_USE = 'STORE_ITEMS_IN_USE'
 export const STORE_ALL = 'STORE_ALL'
 export const STORE_ENABLE_STORE_STOCK_MANAGEMENT = 'STORE_ENABLE_STORE_STOCK_MANAGEMENT';
 export const STORE_DISPLAY_AS = 'STORE_DISPLAY_AS';
 export const STORE_DISCOUNT = 'STORE_DISCOUNT';
+export const BUY_ITEM = 'BUY_ITEM';
 
 export function storeConfiguration(configurationState: ConfigurationState) {
     return { type: STORE_CONFIGURATION, spoilerFilter: configurationState}
@@ -27,10 +27,6 @@ export function storeProsperityItem(itemId: Array<number>) {
     return { type: STORE_PROSPERITY_ITEM, itemId}
 }
 
-export function storeItemsInUse(itemsInUse: ItemsInUse) {
-    return { type: STORE_ITEMS_IN_USE, itemsInUse}
-}
-
 export function storeAll(all: boolean) {
     return { type: STORE_ALL, all}
 }
@@ -45,6 +41,10 @@ export function storeDisplayAs(displayAs: string) {
 
 export function storeDiscount(discount: number) {
     return {type: STORE_DISCOUNT, discount};
+}
+
+export function buyItem(itemId: number, playerName: string) {
+    return {type: BUY_ITEM, payload: {itemId, playerName}}
 }
 
 export interface ConfigurationState {
@@ -71,37 +71,39 @@ const initialConfigurationState: ConfigurationState = {
     lockSpoilerPanel: false,
 };
 
+const updateItemsInUse = (itemsInUse: ItemsInUse, itemId: number, playerName: string): ItemsInUse => {
+    const updatedItemsInUse = {...itemsInUse}
+    if (updatedItemsInUse[itemId]) {
+        updatedItemsInUse[itemId] = [...updatedItemsInUse[itemId], playerName]
+    } else {
+        updatedItemsInUse[itemId] = [playerName]
+    }
+
+    return updatedItemsInUse
+}
+
 export function configurationState(state = initialConfigurationState, action:any) {
     let newState = state;
     switch (action.type)
     {
         case STORE_CONFIGURATION:
-            newState = action.spoilerFilter;
-            break;
+            return newState = action.spoilerFilter;
         case STORE_PROSPERITY:
-            newState = { ...state, prosperity: action.prosperity};
-            break;
+            return newState = { ...state, prosperity: action.prosperity};
         case STORE_SOLO_CLASS:
-            newState = { ...state, soloClass: action.soloClass};
-            break;
+            return newState = { ...state, soloClass: action.soloClass};
         case STORE_PROSPERITY_ITEM:
-            newState = { ...state, prosperityItemIds: action.itemId};
-            break;
-        case STORE_ITEMS_IN_USE:
-            newState = { ...state, itemsInUse: action.itemsInUse};
-            break;
+            return newState = { ...state, prosperityItemIds: action.itemId};
         case STORE_ALL:
-            newState = { ...state, all: action.all};
-            break;
+            return newState = { ...state, all: action.all};
         case STORE_ENABLE_STORE_STOCK_MANAGEMENT:
-            newState = {...state, enableStoreStockManagement: action.enableStoreStockManagement};
-            break;
+            return newState = {...state, enableStoreStockManagement: action.enableStoreStockManagement};
         case STORE_DISPLAY_AS:
-            newState = {...state, displayAs: action.displayAs};
-            break;
+            return newState = {...state, displayAs: action.displayAs};
         case STORE_DISCOUNT:
-            newState = {...state, discount: action.discount};
-            break;
+            return newState = {...state, discount: action.discount};
+        case BUY_ITEM:
+            return newState = {...state, itemsInUse: updateItemsInUse(state.itemsInUse, action.payload.itemId, action.payload.playerName)}
         default:
             return state;
     }

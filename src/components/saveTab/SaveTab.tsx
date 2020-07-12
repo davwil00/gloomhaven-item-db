@@ -10,7 +10,7 @@ type Props = {
     storeShareLockSpoilerPanel: (shareLockSpoilerPanel: boolean) => {}
 }
 
-class ShareTab extends Component<Props> {
+class SaveTab extends Component<Props> {
     render() {
         const {shareLockSpoilerPanel} = this.props;
         const spoilerFilter = this.props.spoilerFilter;
@@ -49,4 +49,4 @@ class ShareTab extends Component<Props> {
 
 }
 
-export default ShareTab
+export default SaveTab

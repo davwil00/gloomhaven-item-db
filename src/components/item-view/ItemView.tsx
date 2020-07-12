@@ -3,7 +3,7 @@ import {Button, Icon, Image, Popup, Table, Label, Message, Modal, Select} from '
 import {Helpers} from "../../helpers";
 import ConfigurationState from '../../State/ConfigurationState';
 import { GloomhavenItem, SortProperty, GloomhavenItemSlot, SortState } from '../../State/Types';
-import ItemViewState from '../../State/ItemViewState';
+import ItemViewState, { closeBuyItemModal } from '../../State/ItemViewState';
 import { getItemImageSrc, getSlotImageSrc } from '../../helpers/ImageHelper';
 import SearchOptions from '../search-options/SearchOptionsContainer';
 
@@ -14,8 +14,13 @@ type Props = {
     configurationState: ConfigurationState,
     items: Array<GloomhavenItem>,
     storeSortingProperty: (property: SortProperty) => void,
-    buyItem: (itemId: number) => void,
-    closeBuyItemModal: () => void
+    showBuyItemModal: (itemId: number) => void,
+    closeBuyItemModal: () => void,
+    buyItem: (itemId: number, playerName: string) => void
+}
+
+type ModalState = {
+    selectedPlayer?: string
 }
 
 const renderSummon = (item: GloomhavenItem) => {
@@ -31,7 +36,11 @@ const renderSummon = (item: GloomhavenItem) => {
     );
 }
 
-class ItemView extends Component<Props> {
+class ItemView extends Component<Props, ModalState> {
+
+    state = {
+        selectedPlayer: undefined
+    }
 
     itemsListAsImages() {
         const {items} = this.props
@@ -68,13 +77,13 @@ class ItemView extends Component<Props> {
                 <Table.HeaderCell className={'text-col'}>Effect</Table.HeaderCell>
                 <Table.HeaderCell className={'source-col'}>Source</Table.HeaderCell>
                 <Table.HeaderCell
-                    className={'store-inventory-col'}># Available'</Table.HeaderCell>
+                    className={'store-inventory-col'}># Available</Table.HeaderCell>
             </Table.Row>
         </Table.Header>
     }
 
     tableBody() {
-        const {items, buyItem} = this.props
+        const {items, showBuyItemModal} = this.props
         const {discount, itemsInUse} = this.props.configurationState
         return <Table.Body>
             {items.map(item => {
@@ -105,20 +114,26 @@ class ItemView extends Component<Props> {
                             {item.source.split("\n").map(s => <React.Fragment key={s}><span dangerouslySetInnerHTML={{__html: s}}/><br/></React.Fragment>)}
                         </Table.Cell>
                         <Table.Cell className={'store-inventory-col'} textAlign={'right'}>
-                            {itemsInUse[item.id]
-                                ?  <Button as='div' labelPosition='right' onClick={() => buyItem(item.id)}>
-                                        <Button icon>
-                                        <Popup trigger={<Icon name="add user" />}
-                                                content={itemsInUse[item.id]}
-                                                position="right center"/>
-                                        </Button>
-                                        <Label as='a' basic pointing='left'>
-                                            {itemsInUse[item.id].length} / {item.count}
-                                        </Label>
-                                    </Button>
-                                
-                                : item.count
-                            }
+                            {itemsInUse[item.id] ? 
+                            <Button as='div' labelPosition='right' onClick={() => showBuyItemModal(item.id)}>
+                                <Button icon>
+                                <Popup trigger={<Icon name="add user" />}
+                                        content={itemsInUse[item.id]}
+                                        position="right center"/>
+                                </Button>
+                                <Label as='a' basic pointing='left'>
+                                    <span className="nowrap">{item.count - itemsInUse[item.id].length} / {item.count}</span>
+                                </Label>
+                            </Button>
+                            : 
+                            <Button as='div' labelPosition='right' onClick={() => showBuyItemModal(item.id)}>
+                                <Button icon>
+                                    <Icon name="add user"/>
+                                </Button>
+                                <Label as='a' basic pointing='left'>
+                                    <span className="nowrap">{item.count} / {item.count}</span>
+                                </Label>
+                            </Button>}
                         </Table.Cell>
                     </Table.Row>
                 );
@@ -132,7 +147,7 @@ class ItemView extends Component<Props> {
         const item = this.props.items.find(item => item.id === buyItemId)
 
         return ( item &&
-            <Modal size="tiny" open={showBuyItemModal}>
+            <Modal size="tiny" open={showBuyItemModal} onClose={this.props.closeBuyItemModal}>
             <Modal.Header>Buy Item</Modal.Header>
             <Modal.Content>
                 <p>Name: {item.name}</p>
@@ -140,16 +155,18 @@ class ItemView extends Component<Props> {
                 <p>Player: 
                     <Select fluid label="Player"
                         placeholder='Select player' 
-                        options={playerNames} />
+                        options={playerNames} 
+                        onChange={(_, action) => this.setState({selectedPlayer: action.value as string})} />
                 </p>
             </Modal.Content>
             <Modal.Actions>
-                <Button negative>No</Button>
+                <Button negative onClick={this.props.closeBuyItemModal}>No </Button>
                 <Button
-                positive
-                icon='checkmark'
-                labelPosition='right'
-                content='Yes'
+                    positive
+                    icon='checkmark'
+                    labelPosition='right'
+                    content='Yes'
+                    onClick={() => this.props.buyItem(buyItemId!, this.state.selectedPlayer!)}
                 />
             </Modal.Actions>
             </Modal>
@@ -158,7 +175,6 @@ class ItemView extends Component<Props> {
 
     render() {
         const {items, itemViewState} = this.props
-        const {discount, itemsInUse} = this.props.configurationState
         const {displayType} = itemViewState
         
         return (

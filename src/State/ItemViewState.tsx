@@ -6,7 +6,7 @@ export const STORE_FILTER_SEARCH = 'STORE_FILTER_SEARCH';
 export const STORE_SORTING_PROPERTY = 'STORE_SORTING_PROPERTY'
 export const STORE_IMPORT_MODAL_OPEN = 'STORE_IMPORT_MODAL_OPEN';
 export const STORE_SHARE_LOCK_SPOILER_PANEL = 'STORE_SHARE_LOCK_SPOILER_PANEL';
-export const BUY_ITEM = "BUY_ITEM"
+export const SHOW_BUY_ITEM_MODAL = "SHOW_BUY_ITEM_MODAL"
 export const CLOSE_BUY_ITEM_MODAL = "CLOSE_BUY_ITEM_MODAL"
 
 export function storeFilterSlot(slot?: GloomhavenItemSlot) {
@@ -25,8 +25,8 @@ export function storeShareLockSpoilerPanel(shareLockSpoilerPanel: boolean) {
     return { type: STORE_SHARE_LOCK_SPOILER_PANEL, shareLockSpoilerPanel}
 }
 
-export function buyItem(itemId: number) {
-    return { type: BUY_ITEM, itemId}
+export function showBuyItemModal(itemId: number) {
+    return { type: SHOW_BUY_ITEM_MODAL, itemId}
 }
 
 export function closeBuyItemModal() {
@@ -76,8 +76,8 @@ export function itemViewState(state = initialItemViewState, action:any) {
             return { ...state, importModalOpen: action.importModalOpen};
         case STORE_SHARE_LOCK_SPOILER_PANEL:
             return { ...state, shareLockSpoilerPanel: action.shareLockSpoilerPanel};
-        case BUY_ITEM:
-            return { ...state, showBuyItemModal: true, buyItemId: action.buyItemId };
+        case SHOW_BUY_ITEM_MODAL:
+            return { ...state, showBuyItemModal: true, buyItemId: action.itemId };
         case CLOSE_BUY_ITEM_MODAL:
             return { ...state, showBuyItemModal: false}
         default:

@@ -1,8 +1,8 @@
 import { connect } from "react-redux"
 import ItemView, { gloomhavenItemSlots } from "./ItemView"
 import { GloomhavenItem, SortProperty, FilterState, SortState, GloomhavenItemSourceType, SortDirection } from "../../State/Types"
-import ItemViewState, { storeSortingProperty, buyItem, closeBuyItemModal } from "../../State/ItemViewState"
-import ConfigurationState from "../../State/ConfigurationState"
+import ItemViewState, { storeSortingProperty, showBuyItemModal, closeBuyItemModal } from "../../State/ItemViewState"
+import ConfigurationState, { buyItem } from "../../State/ConfigurationState"
 import { Helpers } from "../../helpers"
 
 const deSpoilerItemSource = (source:string): string => {
@@ -135,8 +135,12 @@ const mapStateToProps = (state:any) => {
 
 const mapDispatchToProps = (dispatch: any) => ({
     storeSortingProperty: (property: SortProperty) => dispatch(storeSortingProperty(property)),
-    buyItem: (itemId: number) => dispatch(buyItem(itemId)),
-    closeBuyItemModal: () => dispatch(closeBuyItemModal())
+    showBuyItemModal: (itemId: number) => dispatch(showBuyItemModal(itemId)),
+    closeBuyItemModal: () => dispatch(closeBuyItemModal()),
+    buyItem: (itemId: number, playerName: string) => {
+        dispatch(buyItem(itemId, playerName))
+        dispatch(closeBuyItemModal())
+    }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ItemView)
