@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import ShareTab from "./ShareTab";
-import { storeShareLockSpoilerPanel } from "../State/ItemViewState";
+import { storeShareLockSpoilerPanel } from "../../State/ItemViewState";
 
 const mapStateToProps = (state: any) => ({
     shareLockSpoilerPanel: state.itemViewState.shareLockSpoilerPanel,

@@ -1,14 +1,14 @@
 import SearchOptions from "./SearchOptions";
 import { connect } from "react-redux";
-import { storeDisplayAs, storeDiscount } from "../State/SpoilerFilter";
-import { storeFilterSlot, storeFilterSearch, storeSortingProperty } from "../State/ItemViewState";
-import { GloomhavenItemSlot, SortProperty } from "../State/Types";
+import { storeDisplayAs, storeDiscount } from "../../State/ConfigurationState";
+import { storeFilterSlot, storeFilterSearch, storeSortingProperty } from "../../State/ItemViewState";
+import { GloomhavenItemSlot, SortProperty } from "../../State/Types";
 
 const mapStateToProps = (state: any) => ({
   filter: state.itemViewState.filter,
   sorting: state.itemViewState.sorting,
-  displayAs: state.spoilerFilter.displayAs,
-  discount: state.spoilerFilter.discount
+  displayAs: state.configurationState.displayAs,
+  discount: state.configurationState.discount
 })
 
 const mapDispatchToProps = (dispatch: any) => ({

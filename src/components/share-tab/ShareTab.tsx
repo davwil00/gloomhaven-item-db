@@ -1,12 +1,12 @@
 import { Component } from "react";
-import SpoilerFilter from "../State/SpoilerFilter";
+import ConfigurationState from "../../State/ConfigurationState";
 import React from "react";
 import { Form, Message, Icon } from "semantic-ui-react";
-import { storeShareLockSpoilerPanel } from "../State/ItemViewState";
+import { storeShareLockSpoilerPanel } from "../../State/ItemViewState";
 
 type Props = {
     shareLockSpoilerPanel: boolean,
-    spoilerFilter: SpoilerFilter,
+    spoilerFilter: ConfigurationState,
     storeShareLockSpoilerPanel: (shareLockSpoilerPanel: boolean) => {}
 }
 

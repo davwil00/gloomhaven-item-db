@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { Form, Button, Input } from "semantic-ui-react";
-import { SortProperty, GloomhavenItemSlot, SortState, FilterState, ItemViewDisplayType } from "../State/Types"
-import { gloomhavenItemSlots } from "../ItemView";
-import { getSlotImageSrc } from "../helpers/ImageHelper";
+import { SortProperty, GloomhavenItemSlot, SortState, FilterState, ItemViewDisplayType } from "../../State/Types"
+import { gloomhavenItemSlots } from "../item-view/ItemView";
+import { getSlotImageSrc } from "../../helpers/ImageHelper";
 
 type Props = {
     filter: FilterState,
@@ -35,27 +35,6 @@ class SearchOptions extends Component<Props> {
                                 }}>Images</Button>
                         </Button.Group>
                     </Form.Group>
-                    {displayAs === 'list' && <Form.Group inline>
-                        <label>Reputation Discount:</label>
-                        <Form.Select value={discount}
-                                options={[
-                                    {value: -5, text: "-5 gold"}, // (19 - 20)
-                                    {value: -4, text: "-4 gold"}, // (15 - 18)
-                                    {value: -3, text: "-3 gold"}, // (11 - 14)
-                                    {value: -2, text: "-2 gold"}, // (7 - 13)
-                                    {value: -1, text: "-1 gold"}, // (3 - 6)
-                                    {value: 0, text: "none"}, // (-2 - 2)
-                                    {value: 1, text: "+1 gold"}, // (-3 - -6)
-                                    {value: 2, text: "+2 gold"}, // (-7 - -10)
-                                    {value: 3, text: "+3 gold"}, // (-11 - -14)
-                                    {value: 4, text: "+4 gold"}, // (-15 - -18)
-                                    {value: 5, text: "+5 gold"}, // (-19 - -20)
-                                ]}
-                                onChange={(obj, e) => {
-                                    this.props.storeDiscount(typeof e.value === 'number' ? e.value : 0);
-                                }}
-                        />
-                    </Form.Group>}
                     {displayAs === 'images' && <Form.Group inline>
                         <label>Sort By:</label>
                         <Form.Select

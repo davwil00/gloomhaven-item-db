@@ -44,3 +44,7 @@ export interface FilterState {
     slot?: GloomhavenItemSlot
     search: string
 }
+
+export interface ItemsInUse {
+    [key: number]: Array<string>
+}
