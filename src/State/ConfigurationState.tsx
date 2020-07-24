@@ -1,5 +1,4 @@
 import { SoloClassShorthand, ItemViewDisplayType, ItemsInUse } from "./Types";
-import { configurationLocalStorageKey } from "../components/main";
 
 export const STORE_CONFIGURATION = 'STORE_CONFIGURATION';
 export const STORE_PROSPERITY = 'STORE_PROSPERITY';
@@ -12,7 +11,7 @@ export const STORE_DISCOUNT = 'STORE_DISCOUNT';
 export const BUY_ITEM = 'BUY_ITEM';
 
 export function storeConfiguration(configurationState: ConfigurationState) {
-    return { type: STORE_CONFIGURATION, spoilerFilter: configurationState}
+    return { type: STORE_CONFIGURATION, configuration: configurationState}
 }
 
 export function storeProsperity(prosperity: number) {
@@ -51,6 +50,7 @@ export interface ConfigurationState {
     soloClass: Array<SoloClassShorthand>
     discount: number
     enableStoreStockManagement: boolean
+    hash: string
 }
 
 const initialConfigurationState: ConfigurationState = {
@@ -61,6 +61,7 @@ const initialConfigurationState: ConfigurationState = {
     soloClass: [],
     discount: 0,
     enableStoreStockManagement: false,
+    hash: ''
 };
 
 const updateItemsInUse = (itemsInUse: ItemsInUse, itemId: number, playerName: string): ItemsInUse => {
@@ -79,7 +80,7 @@ export function configurationState(state = initialConfigurationState, action:any
     switch (action.type)
     {
         case STORE_CONFIGURATION:
-            return newState = action.spoilerFilter;
+            return newState = action.configuration;
         case STORE_PROSPERITY:
             return newState = { ...state, prosperity: action.prosperity};
         case STORE_SOLO_CLASS:
@@ -97,7 +98,6 @@ export function configurationState(state = initialConfigurationState, action:any
         default:
             return state;
     }
-    localStorage.setItem(configurationLocalStorageKey, JSON.stringify(newState));
     return newState;
 }
 

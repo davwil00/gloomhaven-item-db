@@ -1,20 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Header, Button, Icon, Tab } from "semantic-ui-react";
-import { storeConfiguration } from "../State/ConfigurationState";
+import ConfigurationState, { storeConfiguration } from "../State/ConfigurationState";
 import { useDispatch } from "react-redux";
 import SaveTab from "./saveTab/SaveTab";
 import Configuration from "./configuration/ConfigurationContainer";
 import ItemView from "./item-view/ItemViewContainer";
+import md5 from "crypto-js/md5"
 
-export const configurationLocalStorageKey = 'GloomhavenStore:configuration';
-
-const restoreFromGithubGist = (dispatch: (action: any) => void) => {
+export async function fetchConfigurationFromGitHub(): Promise<ConfigurationState> {
     const gistUrl = `https://gist.githubusercontent.com/davwil00/${process.env.REACT_APP_GIST_ID}/raw/gloomhaven-shop.json`;
 
-    fetch(gistUrl)
-        .then(response => response.json()
-            .then(configurationState => dispatch(storeConfiguration(configurationState)))
-        ).catch(error => alert('Unable to load config'))
+    return fetch(gistUrl)
+        .then(response => response.json())
+        .then(loadedConfiguration => {
+            loadedConfiguration.hash = md5(loadedConfiguration);
+            return loadedConfiguration;
+        })
+}
+
+const restoreFromGithubGist = (dispatch: (action: any) => void) => {
+    fetchConfigurationFromGitHub()
+        .then(configurationState => {
+            dispatch(storeConfiguration(configurationState))
+        }).catch(error => alert('Unable to load config'))
 }
 
 export function Main() {
