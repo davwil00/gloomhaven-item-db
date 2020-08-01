@@ -88,6 +88,8 @@ const filterItems = (filter: FilterState, configurationState: ConfigurationState
         let hit = true;
         if (filter.slot) hit = hit && item.slot === filter.slot;
         if (filter.search.length > 2 && hit) hit = hit && (!!item.name.match(new RegExp(filter.search, 'i')) || !!item.desc.match(new RegExp(filter.search, 'i')));
+        const itemUsers = configurationState.itemsInUse[item.id]
+        if (filter.player) hit = hit && itemUsers && itemUsers.includes(filter.player);
         return hit;
     });
 }

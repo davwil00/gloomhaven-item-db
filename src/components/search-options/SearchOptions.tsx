@@ -14,6 +14,7 @@ type Props = {
     storeSortingProperty: (property: SortProperty) => void,
     storeFilterSlot: (slot?: GloomhavenItemSlot) => void,
     storeFilterSearch: (search: string) => void,
+    storeFilterPlayer: (player: string) => void
 }
 
 class SearchOptions extends Component<Props> {
@@ -63,6 +64,16 @@ class SearchOptions extends Component<Props> {
                             icon={{name: 'close', link: true, onClick: () => this.props.storeFilterSearch('')}}
                             placeholder={'Search...'}
                         />
+                    </Form.Group>
+                    <Form.Group inline>
+                      <label>Player:</label>
+                      <Form.Field inline control="select" onChange={(e: React.FormEvent<HTMLInputElement>) => this.props.storeFilterPlayer(e.currentTarget.value)}>
+                        <option value=''>Select a player</option>
+                        <option value='David'>David</option>
+                        <option value='Katie'>Katie</option>
+                        <option value='Paul'>Paul</option>
+                        <option value='Tim'>Tim</option>
+                      </Form.Field>
                     </Form.Group>
                 </Form>
             </React.Fragment>

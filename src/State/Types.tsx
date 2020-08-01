@@ -42,7 +42,8 @@ export interface SortState {
 
 export interface FilterState {
     slot?: GloomhavenItemSlot
-    search: string
+    search: string,
+    player: string
 }
 
 export interface ItemsInUse {
