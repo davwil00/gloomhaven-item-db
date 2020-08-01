@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 
 const mapStateToProps = (state: any) => ({
     configurationState: state.configurationState,
-    discount: state.itemViewState.discount
+    discount: state.configurationState.discount
 })
 
 const mapDispatchToProps = (dispatch: any) => ({
