@@ -13,7 +13,7 @@ export async function fetchConfigurationFromGitHub(): Promise<ConfigurationState
     return fetch(gistUrl)
         .then(response => response.json())
         .then(loadedConfiguration => {
-            loadedConfiguration.hash = md5(loadedConfiguration);
+            loadedConfiguration.hash = md5(loadedConfiguration).toString();
             return loadedConfiguration;
         })
 }
