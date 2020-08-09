@@ -10,6 +10,8 @@ export const STORE_DISPLAY_AS = 'STORE_DISPLAY_AS';
 export const STORE_DISCOUNT = 'STORE_DISCOUNT';
 export const BUY_ITEM = 'BUY_ITEM';
 export const SELL_ITEM = 'SELL_ITEM';
+export const ADD_PLAYER = 'ADD_PLAYER';
+export const REMOVE_PLAYER = 'REMOVE_PLAYER';
 
 export function storeConfiguration(configurationState: ConfigurationState) {
     return { type: STORE_CONFIGURATION, configuration: configurationState}
@@ -47,6 +49,14 @@ export function sellItem(itemId: number, playerName: string) {
     return {type: SELL_ITEM, payload: {itemId, playerName}};
 }
 
+export function addPlayer(playerName: string) {
+    return {type: ADD_PLAYER, payload: playerName};
+}
+
+export function removePlayer(playerName: string) {
+    return {type: REMOVE_PLAYER, payload: playerName};
+}
+
 export interface ConfigurationState {
     all: boolean
     prosperity: number
@@ -55,6 +65,7 @@ export interface ConfigurationState {
     soloClass: Array<SoloClassShorthand>
     discount: number
     enableStoreStockManagement: boolean
+    players: Array<string>
     hash: string
 }
 
@@ -66,6 +77,7 @@ const initialConfigurationState: ConfigurationState = {
     soloClass: [],
     discount: 0,
     enableStoreStockManagement: false,
+    players: [],
     hash: ''
 };
 
@@ -91,27 +103,36 @@ export function configurationState(state = initialConfigurationState, action:any
     switch (action.type)
     {
         case STORE_CONFIGURATION:
-            return newState = action.configuration;
+            return action.configuration;
         case STORE_PROSPERITY:
-            return newState = { ...state, prosperity: action.prosperity};
+            return { ...state, prosperity: action.prosperity};
         case STORE_SOLO_CLASS:
-            return newState = { ...state, soloClass: action.soloClass};
+            return { ...state, soloClass: action.soloClass};
         case STORE_PROSPERITY_ITEM:
-            return newState = { ...state, prosperityItemIds: action.itemId};
+            return { ...state, prosperityItemIds: action.itemId};
         case STORE_ALL:
-            return newState = { ...state, all: action.all};
+            return { ...state, all: action.all};
         case STORE_ENABLE_STORE_STOCK_MANAGEMENT:
-            return newState = {...state, enableStoreStockManagement: action.enableStoreStockManagement};
+            return {...state, enableStoreStockManagement: action.enableStoreStockManagement};
         case STORE_DISCOUNT:
-            return newState = {...state, discount: action.discount};
+            return {...state, discount: action.discount};
         case BUY_ITEM:
-            return newState = {...state, itemsInUse: addPlayerToItem(state.itemsInUse, action.payload.itemId, action.payload.playerName)}
+            return {...state, itemsInUse: addPlayerToItem(state.itemsInUse, action.payload.itemId, action.payload.playerName)}
         case SELL_ITEM:
-            return newState = {...state, itemsInUse: removePlayerFromItem(state.itemsInUse, action.payload.itemId, action.payload.playerName)}
+            return {...state, itemsInUse: removePlayerFromItem(state.itemsInUse, action.payload.itemId, action.payload.playerName)}
+        case ADD_PLAYER:
+            return {...state, players: [...state.players, action.payload]};
+        case REMOVE_PLAYER:
+            const newPlayers = state.players.filter(player => player !== action.payload);
+            const newItemsInUse = {...state.itemsInUse};
+
+            Object.entries(newItemsInUse).forEach(([key, value]) => {
+              newItemsInUse[key as unknown as number] = value.filter(player => player !== action.payload);
+            });
+            return {...state, players: newPlayers, itemsInUse: newItemsInUse};
         default:
             return state;
     }
-    return newState;
 }
 
 export default ConfigurationState;

@@ -8,7 +8,8 @@ const mapStateToProps = (state: any) => ({
   filter: state.itemViewState.filter,
   sorting: state.itemViewState.sorting,
   displayType: state.itemViewState.displayType,
-  discount: state.configurationState.discount
+  discount: state.configurationState.discount,
+  players: state.configurationState.players
 })
 
 const mapDispatchToProps = (dispatch: any) => ({

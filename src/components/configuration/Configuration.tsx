@@ -1,22 +1,36 @@
 import ConfigurationState from "../../State/ConfigurationState";
-import { Component } from "react";
+import { Component, useState } from "react";
 import React from "react";
-import { Form, Image } from "semantic-ui-react";
+import { Form, Image, Button, Input, Modal, Header, Icon } from "semantic-ui-react";
 import { SoloClassShorthand } from "../../State/Types";
 
 type Props = {
     configurationState: ConfigurationState,
     discount: number,
-    storeProsperity: (prosperity: number) => {},
-    storeEnableStoreStockManagement: (enableStoreStockManagement: boolean) => {},
-    storeProsperityItem: (item: Array<number>) => {},
-    storeSoloClass: (soloClass: Array<SoloClassShorthand>) => {},
-    storeDiscount: (discount: number) => {}
+    storeProsperity: (prosperity: number) => void,
+    storeEnableStoreStockManagement: (enableStoreStockManagement: boolean) => void,
+    storeProsperityItem: (item: Array<number>) => void,
+    storeSoloClass: (soloClass: Array<SoloClassShorthand>) => void,
+    storeDiscount: (discount: number) => void,
+    addPlayer: (playerName: string) => void,
+    removePlayer: (playerName: string) => void
+}
+
+type State = {
+  newPlayer: string,
+  playerToRemove: string,
+  showRemovePlayerModal: boolean,
 }
 
 const GloomhavenSoloClassShorthands: Array<SoloClassShorthand> = ['BR', 'TI', 'SW', 'SC', 'CH', 'MT', 'SK', 'QM', 'SU', 'NS', 'PH', 'BE', 'SS', 'DS', 'SB', 'EL', 'BT'];
 
-class Configuration extends Component<Props> {
+class Configuration extends Component<Props, State> {
+
+    state = {
+      newPlayer: '',
+      playerToRemove: '',
+      showRemovePlayerModal: false
+    }
 
     toggleItemFilter(key: number) {
         const {prosperityItemIds} = this.props.configurationState;
@@ -39,8 +53,8 @@ class Configuration extends Component<Props> {
     }
 
     render() {
-
-        const {configurationState, discount} = this.props;
+        const {configurationState, discount, addPlayer, removePlayer} = this.props;
+        const {playerToRemove, newPlayer, showRemovePlayerModal} = this.state;
 
         return (
             <React.Fragment>
@@ -69,6 +83,25 @@ class Configuration extends Component<Props> {
                                 this.props.storeEnableStoreStockManagement(!configurationState.enableStoreStockManagement);
                             }}/>
                     </Form.Group>
+
+                    <Form.Group inline>
+                      <Form.Group inline>
+                      <label>Players</label>
+                      {configurationState.players.map(player =>
+                         <Button basic
+                                 color='black'
+                                 content={player} 
+                                 icon='delete user' 
+                                 onClick={() => this.setState({playerToRemove: player, showRemovePlayerModal: true})}/>
+                      )}
+                      </Form.Group>
+                      <Form.Group inline>
+                        <input type='text' 
+                              onChange={(event) => this.setState({newPlayer: event.target.value})} />
+                        <Button icon='add user' basic color='black' onClick={() => addPlayer(newPlayer)}/>
+                      </Form.Group>
+                    </Form.Group>
+                    
 
                     <Form.Group inline>
                         <label>Prosperity:</label>
@@ -153,6 +186,32 @@ class Configuration extends Component<Props> {
                     </Form.Group>
 
                 </Form>
+                <Modal basic
+                       onClose={() => this.setState({showRemovePlayerModal: false})}
+                       open={showRemovePlayerModal}
+                       size='small'>
+                  <Modal.Content>
+                    <p>
+                      Are you sure you want to remove {playerToRemove}.
+                    </p>
+                    <p>
+                      This action will also return all of the {playerToRemove}'s items back to the shop.
+                    </p>
+                  </Modal.Content>
+                  <Modal.Actions>
+                    <Button basic color='red' inverted onClick={() => this.setState({showRemovePlayerModal: false})}>
+                      <Icon name='remove' /> No
+                    </Button>
+                    <Button color='green' 
+                            inverted 
+                            onClick={() => {
+                              removePlayer(playerToRemove);
+                              this.setState({showRemovePlayerModal: false});
+                            }}>
+                      <Icon name='checkmark' /> Yes
+                    </Button>
+                  </Modal.Actions>
+                </Modal>
             </React.Fragment>
         );
     }

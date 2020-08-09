@@ -9,6 +9,7 @@ type Props = {
     sorting: SortState
     displayType: ItemViewDisplayType,
     discount: number,
+    players: Array<string>,
     storeDisplayType: (displayType: ItemViewDisplayType) => void,
     storeDiscount: (discount: number) => void,
     storeSortingProperty: (property: SortProperty) => void,
@@ -19,7 +20,7 @@ type Props = {
 
 class SearchOptions extends Component<Props> {
     render() {
-        const { displayType, discount, sorting, filter } = this.props;
+        const { displayType, discount, sorting, filter, players } = this.props;
         return (
             <React.Fragment>
 
@@ -69,10 +70,7 @@ class SearchOptions extends Component<Props> {
                       <label>Player:</label>
                       <Form.Field inline control="select" onChange={(e: React.FormEvent<HTMLInputElement>) => this.props.storeFilterPlayer(e.currentTarget.value)}>
                         <option value=''>Select a player</option>
-                        <option value='David'>David</option>
-                        <option value='Katie'>Katie</option>
-                        <option value='Paul'>Paul</option>
-                        <option value='Tim'>Tim</option>
+                        {players.map(player => <option value={player}>{player}</option>)}
                       </Form.Field>
                     </Form.Group>
                 </Form>

@@ -144,10 +144,10 @@ class ItemView extends Component<Props, ModalState> {
     }
 
     buyModal() {
-        const playerNames = ["David", "Katie", "Paul", "Tim"].map(name => {return {key: name, value: name, text: name}})
-        const {showBuyItemModal, buyItemId} = this.props.itemViewState
-        const item = this.props.items.find(item => item.id === buyItemId)
-        const {itemsInUse} = this.props.configurationState
+      const {showBuyItemModal, buyItemId} = this.props.itemViewState
+      const item = this.props.items.find(item => item.id === buyItemId)
+      const {itemsInUse, players} = this.props.configurationState
+      const playerNames = players.map(name => {return {key: name, value: name, text: name}})
 
         return ( item &&
             <Modal size="tiny" open={showBuyItemModal} onClose={this.props.closeBuyItemModal}>
