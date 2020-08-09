@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Icon, Image, Popup, Table, Label, Message, Modal, Select} from 'semantic-ui-react';
+import {Button, Icon, Image, Popup, Table, Label, Message, Modal, Select, List} from 'semantic-ui-react';
 import {Helpers} from "../../helpers";
 import ConfigurationState from '../../State/ConfigurationState';
 import { GloomhavenItem, SortProperty, GloomhavenItemSlot, SortState } from '../../State/Types';
@@ -16,7 +16,8 @@ type Props = {
     storeSortingProperty: (property: SortProperty) => void,
     showBuyItemModal: (itemId: number) => void,
     closeBuyItemModal: () => void,
-    buyItem: (itemId: number, playerName: string) => void
+    buyItem: (itemId: number, playerName: string) => void,
+    sellItem: (itemId: number, playerName: string) => void
 }
 
 type ModalState = {
@@ -146,27 +147,47 @@ class ItemView extends Component<Props, ModalState> {
         const playerNames = ["David", "Katie", "Paul", "Tim"].map(name => {return {key: name, value: name, text: name}})
         const {showBuyItemModal, buyItemId} = this.props.itemViewState
         const item = this.props.items.find(item => item.id === buyItemId)
+        const {itemsInUse} = this.props.configurationState
 
         return ( item &&
             <Modal size="tiny" open={showBuyItemModal} onClose={this.props.closeBuyItemModal}>
             <Modal.Header>Buy Item</Modal.Header>
             <Modal.Content>
-                <p>Name: {item.name}</p>
-                <p>Cost: {item.cost}</p>
-                <p>Player: 
+                <List horizontal verticalAlign="middle">
+                {itemsInUse[item.id] && itemsInUse[item.id].map((player => 
+                  <List.Item key={player}>
+                    <List.Content>
+                      <Button icon="user delete" 
+                              label={{basic: true, content:player, pointing:false, className: 'removePlayer'}}
+                              labelPosition='left'
+                              basic 
+                              onClick={() => this.props.sellItem(item.id, player)}/>
+                    </List.Content>
+                  </List.Item>
+                ))}
+                </List>
+                <List>
+                  <List.Item>
+                    Name: {item.name}
+                  </List.Item>
+                  <List.Item>
+                    Cost: {item.cost}
+                  </List.Item>
+                  <List.Item>
                     <Select fluid label="Player"
-                        placeholder='Select player' 
-                        options={playerNames} 
-                        onChange={(_, action) => this.setState({selectedPlayer: action.value as string})} />
-                </p>
+                          placeholder='Select player' 
+                          options={playerNames} 
+                          onChange={(_, action) => this.setState({selectedPlayer: action.value as string})} />
+                    </List.Item>
+                </List>
             </Modal.Content>
             <Modal.Actions>
-                <Button negative onClick={this.props.closeBuyItemModal}>No </Button>
+                <Button negative onClick={this.props.closeBuyItemModal}>Close </Button>
                 <Button
                     positive
                     icon='checkmark'
                     labelPosition='right'
-                    content='Yes'
+                    content='Buy'
                     onClick={() => this.props.buyItem(buyItemId!, this.state.selectedPlayer!)}
                 />
             </Modal.Actions>

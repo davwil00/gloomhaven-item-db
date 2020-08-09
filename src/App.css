@@ -228,6 +228,10 @@ img.item-card {
     border-right: none;
 }
 
+.ui.label.removePlayer {
+  cursor: auto;
+}
+
 @media screen and (max-width: 768px) {
 
     .ui.table,

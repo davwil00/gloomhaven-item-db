@@ -14,7 +14,7 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.86.0",
+    "semantic-ui-react": "1.1.1",
     "typescript": "^3.3.4000",
     "watch": "^1.0.2"
   },

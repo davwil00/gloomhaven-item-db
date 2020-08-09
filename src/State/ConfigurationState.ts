@@ -9,6 +9,7 @@ export const STORE_ENABLE_STORE_STOCK_MANAGEMENT = 'STORE_ENABLE_STORE_STOCK_MAN
 export const STORE_DISPLAY_AS = 'STORE_DISPLAY_AS';
 export const STORE_DISCOUNT = 'STORE_DISCOUNT';
 export const BUY_ITEM = 'BUY_ITEM';
+export const SELL_ITEM = 'SELL_ITEM';
 
 export function storeConfiguration(configurationState: ConfigurationState) {
     return { type: STORE_CONFIGURATION, configuration: configurationState}
@@ -39,7 +40,11 @@ export function storeDiscount(discount: number) {
 }
 
 export function buyItem(itemId: number, playerName: string) {
-    return {type: BUY_ITEM, payload: {itemId, playerName}}
+    return {type: BUY_ITEM, payload: {itemId, playerName}};
+}
+
+export function sellItem(itemId: number, playerName: string) {
+    return {type: SELL_ITEM, payload: {itemId, playerName}};
 }
 
 export interface ConfigurationState {
@@ -64,7 +69,7 @@ const initialConfigurationState: ConfigurationState = {
     hash: ''
 };
 
-const updateItemsInUse = (itemsInUse: ItemsInUse, itemId: number, playerName: string): ItemsInUse => {
+const addPlayerToItem = (itemsInUse: ItemsInUse, itemId: number, playerName: string): ItemsInUse => {
     const updatedItemsInUse = {...itemsInUse}
     if (updatedItemsInUse[itemId]) {
         updatedItemsInUse[itemId] = [...updatedItemsInUse[itemId], playerName]
@@ -73,6 +78,12 @@ const updateItemsInUse = (itemsInUse: ItemsInUse, itemId: number, playerName: st
     }
 
     return updatedItemsInUse
+}
+
+const removePlayerFromItem = (itemsInUse: ItemsInUse, itemId: number, playerName: string): ItemsInUse => {
+  const updatedItemsInUse = {...itemsInUse}
+  updatedItemsInUse[itemId] = updatedItemsInUse[itemId].filter(player => player !== playerName)
+  return updatedItemsInUse;
 }
 
 export function configurationState(state = initialConfigurationState, action:any) {
@@ -94,7 +105,9 @@ export function configurationState(state = initialConfigurationState, action:any
         case STORE_DISCOUNT:
             return newState = {...state, discount: action.discount};
         case BUY_ITEM:
-            return newState = {...state, itemsInUse: updateItemsInUse(state.itemsInUse, action.payload.itemId, action.payload.playerName)}
+            return newState = {...state, itemsInUse: addPlayerToItem(state.itemsInUse, action.payload.itemId, action.payload.playerName)}
+        case SELL_ITEM:
+            return newState = {...state, itemsInUse: removePlayerFromItem(state.itemsInUse, action.payload.itemId, action.payload.playerName)}
         default:
             return state;
     }
