@@ -70,7 +70,7 @@ class SearchOptions extends Component<Props> {
                       <label>Player:</label>
                       <Form.Field inline control="select" onChange={(e: React.FormEvent<HTMLInputElement>) => this.props.storeFilterPlayer(e.currentTarget.value)}>
                         <option value=''>Select a player</option>
-                        {players.map(player => <option value={player}>{player}</option>)}
+                        {players.map(player => <option key={player} value={player}>{player}</option>)}
                       </Form.Field>
                     </Form.Group>
                 </Form>

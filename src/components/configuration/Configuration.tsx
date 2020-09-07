@@ -88,7 +88,8 @@ class Configuration extends Component<Props, State> {
                       <Form.Group inline>
                       <label>Players</label>
                       {configurationState.players.map(player =>
-                         <Button basic
+                         <Button key={player}
+                                 basic
                                  color='black'
                                  content={player} 
                                  icon='delete user' 
