@@ -86,10 +86,21 @@ const getAvailableItems = (configurationState: ConfigurationState): Array<Gloomh
 const filterItems = (filter: FilterState, configurationState: ConfigurationState) => {
     return getAvailableItems(configurationState).filter((item: GloomhavenItem) => {
         let hit = true;
-        if (filter.slot) hit = hit && item.slot === filter.slot;
-        if (filter.search.length > 2 && hit) hit = hit && (!!item.name.match(new RegExp(filter.search, 'i')) || !!item.desc.match(new RegExp(filter.search, 'i')));
+        if (filter.slot) {
+          hit = hit && item.slot === filter.slot;
+        }
+
+        if (filter.search.length && /^\d+$/.test(filter.search)) {
+          hit = hit && item.id === parseInt(filter.search)
+        } else if (filter.search.length > 2 && hit) {
+          hit = hit && (!!item.name.match(new RegExp(filter.search, 'i')) || !!item.desc.match(new RegExp(filter.search, 'i')));
+        }
+        
         const itemUsers = configurationState.itemsInUse[item.id]
-        if (filter.player) hit = hit && itemUsers && itemUsers.includes(filter.player);
+        if (filter.player) {
+          hit = hit && itemUsers && itemUsers.includes(filter.player);
+        }
+
         return hit;
     });
 }
