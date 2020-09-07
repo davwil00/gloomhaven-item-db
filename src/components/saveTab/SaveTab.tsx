@@ -12,7 +12,7 @@ const save = (configurationState: ConfigurationState) => {
             return
         }
 
-        const result = fetch('https://githelper.davwil00.co.uk', {
+        const result = fetch(`https://githelper.davwil00.co.uk/${process.env.REACT_APP_GIST_ID}`, {
           method: 'PATCH',
           body: JSON.stringify({
             filename: 'gloomhaven-shop.json',
