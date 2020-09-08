@@ -7,8 +7,8 @@ pipeline {
     stage('build') {
       steps {
         nodejs(nodeJSInstallationName: 'node') {
-          sh 'npm install'
-          sh 'npm build'
+          sh 'yarn install'
+          sh 'yarn build'
         }
       }
     }
