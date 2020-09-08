@@ -1,9 +1,15 @@
 pipeline {
   agent any
+  environment { 
+    REACT_APP_GIST_ID = '465d3de5a1fe3c32fc082d4089b864a4'
+  }
   stages {
     stage('build') {
       steps {
-        sh 'yarn build'
+        nodejs {
+          sh 'npm install'
+          sh 'npm build'
+        }
       }
     }
   }
