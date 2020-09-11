@@ -30,7 +30,7 @@ pipeline {
                   remoteDirectory: '/gloomhaven-shop/shop',
                   remoteDirectorySDF: false, 
                   removePrefix: 'build', 
-                  sourceFiles: 'build/*.*'
+                  sourceFiles: 'build/**'
                 )
               ],
               usePromotionTimestamp: false, 
