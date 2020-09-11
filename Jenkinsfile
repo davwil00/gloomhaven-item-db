@@ -27,7 +27,7 @@ pipeline {
                   makeEmptyDirs: true, 
                   noDefaultExcludes: false, 
                   patternSeparator: '[, ]+', 
-                  remoteDirectory: '/david/projects/gloomhaven-item-db/build',
+                  remoteDirectory: '/gloomhaven-shop/shop',
                   remoteDirectorySDF: false, 
                   removePrefix: '', 
                   sourceFiles: 'build/*.*'
