@@ -29,7 +29,7 @@ pipeline {
                   patternSeparator: '[, ]+', 
                   remoteDirectory: '/gloomhaven-shop/shop',
                   remoteDirectorySDF: false, 
-                  removePrefix: '', 
+                  removePrefix: 'build', 
                   sourceFiles: 'build/*.*'
                 )
               ],
