@@ -19,12 +19,12 @@ pipeline {
             sshPublisherDesc(configName: 'Pi', 
               transfers: [
                 sshTransfer(
-                  cleanRemote: false, 
+                  cleanRemote: true, 
                   excludes: '', 
                   execCommand: '', 
                   execTimeout: 120000, 
                   flatten: false, 
-                  makeEmptyDirs: false, 
+                  makeEmptyDirs: true, 
                   noDefaultExcludes: false, 
                   patternSeparator: '[, ]+', 
                   remoteDirectory: '/home/david/projects/gloomhaven-item-db/build',
@@ -35,7 +35,7 @@ pipeline {
               ],
               usePromotionTimestamp: false, 
               useWorkspaceInPromotion: false, 
-              verbose: false
+              verbose: true
             )
           ]
         )
