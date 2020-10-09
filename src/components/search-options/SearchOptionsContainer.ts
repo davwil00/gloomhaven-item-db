@@ -1,7 +1,7 @@
 import SearchOptions from "./SearchOptions";
 import { connect } from "react-redux";
 import { storeDiscount } from "../../State/ConfigurationState";
-import { storeFilterSlot, storeFilterSearch, storeSortingProperty, storeDisplayType, storePlayerFilter } from "../../State/ItemViewState";
+import { storeFilterSlot, storeFilterSearch, storeSortingProperty, storeDisplayType, storePlayerFilter, storeShowAvailable } from "../../State/ItemViewState";
 import { GloomhavenItemSlot, SortProperty, ItemViewDisplayType } from "../../State/Types";
 
 const mapStateToProps = (state: any) => ({
@@ -9,7 +9,7 @@ const mapStateToProps = (state: any) => ({
   sorting: state.itemViewState.sorting,
   displayType: state.itemViewState.displayType,
   discount: state.configurationState.discount,
-  players: state.configurationState.players
+  players: state.configurationState.players,
 })
 
 const mapDispatchToProps = (dispatch: any) => ({
@@ -18,7 +18,8 @@ const mapDispatchToProps = (dispatch: any) => ({
   storeFilterSlot: (slot?: GloomhavenItemSlot) => dispatch(storeFilterSlot(slot)),
   storeFilterSearch: (search: string) => dispatch(storeFilterSearch(search)),
   storeFilterPlayer: (player: string) => dispatch(storePlayerFilter(player)),
-  storeSortingProperty: (property: SortProperty) => dispatch(storeSortingProperty(property))
+  storeSortingProperty: (property: SortProperty) => dispatch(storeSortingProperty(property)),
+  storeShowAvailable: (showAvailable: boolean) => dispatch(storeShowAvailable(showAvailable))
  });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchOptions);

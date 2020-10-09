@@ -7,6 +7,7 @@ export const STORE_PLAYER_SEARCH = 'STORE_PLAYER_SEARCH';
 export const STORE_SORTING_PROPERTY = 'STORE_SORTING_PROPERTY'
 export const STORE_IMPORT_MODAL_OPEN = 'STORE_IMPORT_MODAL_OPEN';
 export const STORE_DISPLAY_TYPE = 'STORE_DISPLAY_TYPE';
+export const STORE_SHOW_AVAILABLE = 'STORE_SHOW_AVAILABLE';
 export const SHOW_BUY_ITEM_MODAL = "SHOW_BUY_ITEM_MODAL";
 export const CLOSE_BUY_ITEM_MODAL = "CLOSE_BUY_ITEM_MODAL";
 
@@ -30,6 +31,10 @@ export function storeDisplayType(displayType: ItemViewDisplayType) {
     return { type: STORE_DISPLAY_TYPE, displayType }
 }
 
+export function storeShowAvailable(showAvailable: boolean) {
+  return { type: STORE_SHOW_AVAILABLE, showAvailable }
+}
+
 export function showBuyItemModal(itemId: number) {
     return { type: SHOW_BUY_ITEM_MODAL, itemId }
 }
@@ -43,21 +48,22 @@ export interface ItemViewState {
     sorting: SortState,
     buyItemId?: number,
     showBuyItemModal: boolean
-    displayType: ItemViewDisplayType
+    displayType: ItemViewDisplayType,
 }
 
 const initialItemViewState : ItemViewState = {
     filter: {
         slot: undefined,
         search: '',
-        player: ''
+        player: '',
+        showAvailable: false
     },
     sorting: {
         direction: SortDirection.ascending,
         property: 'id'
     },
     showBuyItemModal: false,
-    displayType: "list"
+    displayType: "list",
 };
 
 
@@ -84,6 +90,8 @@ export function itemViewState(state = initialItemViewState, action:any) {
             return { ...state, importModalOpen: action.importModalOpen};
         case STORE_DISPLAY_TYPE:
             return { ...state, displayType: action.displayType};
+        case STORE_SHOW_AVAILABLE:
+            return { ...state, filter: { ...state.filter, showAvailable: action.showAvailable}};
         case SHOW_BUY_ITEM_MODAL:
             return { ...state, showBuyItemModal: true, buyItemId: action.itemId };
         case CLOSE_BUY_ITEM_MODAL:

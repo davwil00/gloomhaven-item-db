@@ -43,7 +43,8 @@ export interface SortState {
 export interface FilterState {
     slot?: GloomhavenItemSlot
     search: string,
-    player: string
+    player: string,
+    showAvailable: boolean
 }
 
 export interface ItemsInUse {

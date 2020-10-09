@@ -15,7 +15,8 @@ type Props = {
     storeSortingProperty: (property: SortProperty) => void,
     storeFilterSlot: (slot?: GloomhavenItemSlot) => void,
     storeFilterSearch: (search: string) => void,
-    storeFilterPlayer: (player: string) => void
+    storeFilterPlayer: (player: string) => void,
+    storeShowAvailable: (showAvailable: boolean) => void
 }
 
 class SearchOptions extends Component<Props> {
@@ -73,13 +74,24 @@ class SearchOptions extends Component<Props> {
                         {players.map(player => <option key={player} value={player}>{player}</option>)}
                       </Form.Field>
                     </Form.Group>
+                    <Form.Group inline>
+                      <label>Only show available</label>
+                      <Button.Group>
+                          <Button color={filter.showAvailable ? 'blue' : undefined} onClick={() => {
+                                  this.props.storeShowAvailable(true);
+                              }}>Available</Button>
+                          <Button.Or/>
+                          <Button color={!filter.showAvailable ? 'blue' : undefined} onClick={() => {
+                                  this.props.storeShowAvailable(false);
+                              }}>All</Button>
+                      </Button.Group>
+                    </Form.Group>
                 </Form>
             </React.Fragment>
         );
     }
 
     setFilterSlot(slot?: GloomhavenItemSlot) {
-        // this.props.filter.slot = slot;
         this.props.storeFilterSlot(slot);
     }
 }

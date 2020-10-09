@@ -101,6 +101,10 @@ const filterItems = (filter: FilterState, configurationState: ConfigurationState
           hit = hit && itemUsers && itemUsers.includes(filter.player);
         }
 
+        if (filter.showAvailable) {
+          hit = hit && itemUsers && itemUsers.length < item.count
+        }
+
         return hit;
     });
 }
