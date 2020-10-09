@@ -102,7 +102,7 @@ const filterItems = (filter: FilterState, configurationState: ConfigurationState
         }
 
         if (filter.showAvailable) {
-          hit = hit && itemUsers && itemUsers.length < item.count
+          hit = hit && !itemUsers || itemUsers.length < item.count
         }
 
         return hit;
