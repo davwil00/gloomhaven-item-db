@@ -34,5 +34,5 @@ jobs:
         server: 'davwil00.duckdns.org' 
         ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY  }}
         local_path: './build/*'
-        remote_path: '/gloomhaven-shop/shop'
+        remote_path: '/var/www/gloomhaven-shop/shop'
         port: 18022
