@@ -31,8 +31,8 @@ jobs:
       uses: wlixcc/SFTP-Deploy-Action@v1.0
       with:
         username: 'github'
-        server: 'davwil00.duckdns.org' 
-        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY  }}
+        server: ${{secrets.SSH_URL}}
+        ssh_private_key: ${{secrets.SSH_PRIVATE_KEY}}
         local_path: './build/*'
         remote_path: '/var/www/gloomhaven-shop/shop'
         port: 18022
