@@ -8,7 +8,7 @@ import ItemView from "./item-view/ItemViewContainer";
 import md5 from "crypto-js/md5"
 
 export async function fetchConfigurationFromGitHub(): Promise<ConfigurationState> {
-    const gistUrl = `https://gist.githubusercontent.com/davwil00/${process.env.REACT_APP_GIST_ID}/raw/gloomhaven-shop.json`;
+    const gistUrl = `https://gist.githubusercontent.com/davwil00/${process.env.REACT_APP_GIST_ID}/raw/gloomhaven-shop.json?${new Date().getTime()}`;
 
     return fetch(gistUrl)
         .then(response => response.json())
