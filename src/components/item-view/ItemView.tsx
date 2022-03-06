@@ -56,8 +56,8 @@ class ItemView extends Component<Props, ModalState> {
                         className={'item-card'}/>
 
                     {itemsInUse[item.id]
-                        ? <>{itemsInUse[item.id].length} / {item.count} <Icon name="user" /></>
-                        : item.count
+                        ? <>{itemsInUse[item.id].length} / {item.count} <Icon name="user" /> available</>
+                        : <>{item.count} <Icon name="user" /> available</>
                     }
                 </div>
             ))}

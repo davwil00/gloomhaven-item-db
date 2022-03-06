@@ -28,8 +28,10 @@ export const getSlotImageSrc = (slot: GloomhavenItemSlot):string => {
 }
 
 export const getItemImageSrc = (item: GloomhavenItem): string => {
-    const { folder, name } = item;
+    const { folder, name, id } = item;
     const filename = name.toLowerCase().replace(/\s/g, "-").replace(/'/, "");
-    const game = item.id > 151 ? 'forgotten-circles' : 'gloomaven'
-    return require(`../../vendor/any2cards/images/items/${game}/${folder}/${filename}.png`)
+    const game = item.id > 151 ? 'forgotten-circles' : 'gloomhaven'
+    const hasAlternateForm = id >= 71 && id <= 95
+    const prefix = `${(item.id > 151 ? 'fc' : 'gh')}-${item.id.toString().padStart(3, '0')}${hasAlternateForm ? 'b' : ''}`
+    return require(`../../vendor/any2cards/images/items/${game}/${folder}/${prefix}-${filename}.png`)
 }
