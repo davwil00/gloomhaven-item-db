@@ -15,6 +15,7 @@ export type GloomhavenItemSourceType = 'Prosperity' | 'Random Item Design' | 'Sc
 export interface GloomhavenItem {
     id: number
     name: string
+    folder: string
     count: number
     cost: number
     slot: GloomhavenItemSlot

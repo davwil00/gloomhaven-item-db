@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Header, Button, Icon, Tab } from "semantic-ui-react";
+import { Modal, Header, Button, Icon, Tab, Message } from "semantic-ui-react";
 import ConfigurationState, { storeConfiguration } from "../State/ConfigurationState";
 import { useDispatch } from "react-redux";
 import SaveTab from "./saveTab/SaveTab";
@@ -18,6 +18,11 @@ export async function fetchConfigurationFromGitHub(): Promise<ConfigurationState
         })
 }
 
+export async function checkGithubHelperStatus(): Promise<boolean> {
+  const githubHelperUrl = 'https://githelper.davwil00.co.uk/status'
+  return fetch(githubHelperUrl).then(response => response.status === 200)
+}
+
 const restoreFromGithubGist = (dispatch: (action: any) => void) => {
     fetchConfigurationFromGitHub()
         .then(configurationState => {
@@ -27,9 +32,11 @@ const restoreFromGithubGist = (dispatch: (action: any) => void) => {
 
 export function Main() {
     const [importModalOpen, setImportModalOpen] = useState(false)
+    const [githubHelperOnline, setGithubHelperOnline] = useState(false)
     const dispatch = useDispatch()
     useEffect(() => {
         restoreFromGithubGist(dispatch)
+        checkGithubHelperStatus().then(response => setGithubHelperOnline(response))
     }, [])
 
     let panes = [
@@ -51,6 +58,11 @@ export function Main() {
                     </p>
                 </Modal.Content>
             </Modal>
+
+            {githubHelperOnline || <Message negative>
+              <Message.Header>Server offline</Message.Header>
+              <p>You will not be able to save changes</p>
+            </Message> }
 
             <div>
             <Tab panes={panes} defaultActiveIndex={0}/>

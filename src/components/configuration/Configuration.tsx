@@ -177,6 +177,20 @@ class Configuration extends Component<Props, State> {
                         })}
                     </Form.Group>
 
+
+                    <Form.Group inline className={'inline-break'}>
+                        <label>Forgotten Circles Items:</label>
+                        {/* 152-165 FC items*/}
+                        {[...Array(14).keys()].map((val) => {
+                            const id = val + 152;
+                            return (
+                                <Form.Checkbox key={val} label={'#' + (id + '').padStart(3, '0')}
+                                            checked={configurationState.prosperityItemIds.includes(id)}
+                                            onChange={() => this.toggleItemFilter(id)}/>
+                            )
+                        })}
+                    </Form.Group>
+
                     <Form.Group inline className={'inline-break'}>
                         <label>Solo Class Items:</label>
                         {GloomhavenSoloClassShorthands.map(key => (

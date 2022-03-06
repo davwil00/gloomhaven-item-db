@@ -28,17 +28,8 @@ export const getSlotImageSrc = (slot: GloomhavenItemSlot):string => {
 }
 
 export const getItemImageSrc = (item: GloomhavenItem): string => {
-    let src = '';
-    let name = item.name.toLowerCase().replace(/\s/g, '-').replace(/'/, '');
-    if (item.id >= 64) {
-        src = require('../../vendor/any2cards/images/items/64-151/' + name + '.png');
-    } else if (item.id <= 14) {
-        src = require('../../vendor/any2cards/images/items/1-14/' + name + '.png');
-    } else {
-        let range_from = item.id % 7 === 0
-            ? Math.floor((item.id - 1) / 7) * 7
-            : Math.floor((item.id) / 7) * 7;
-        src = require('../../vendor/any2cards/images/items/' + (range_from + 1) + '-' + (range_from + 7) + '/' + name + '.png');
-    }
-    return src;
+    const { folder, name } = item;
+    const filename = name.toLowerCase().replace(/\s/g, "-").replace(/'/, "");
+    const game = item.id > 151 ? 'forgotten-circles' : 'gloomaven'
+    return require(`../../vendor/any2cards/images/items/${game}/${folder}/${filename}.png`)
 }
