@@ -1,64 +1,56 @@
-import React, { useCallback, useState } from "react";
-import { Form, Message, Icon } from "semantic-ui-react";
-import { isFlagEnabled } from "../../../helpers";
+import React, { useCallback } from "react";
+import { Button, Form, TextArea } from "semantic-ui-react";
 import { getShareHash } from "../MainView/ImportData";
-import UploadForm from "./UploadForm";
+import { calculateHash, fetchConfigurationFromGitHub } from "./gist-helper";
+
+const save = async (config: string) => {
+	const configHash = await calculateHash(config);
+	fetchConfigurationFromGitHub().then(savedConfig => {
+		if (savedConfig.hash !== configHash) {
+			alert("Config has been updated since it was last loaded. Refresh the page to load the latest changes");
+			return;
+		}
+
+		const result = fetch(`https://githelper.davwil00.co.uk/${process.env.REACT_APP_GIST_ID}`, {
+			method: "PATCH",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				filename: "frosthaven-shop.json",
+				content: config
+			})
+		}).then(response => {
+			if (response.status === 200) {
+				alert("Saved");
+			} else {
+				console.error(response.status);
+			}
+		}).catch(err => console.error(err));
+	});
+};
 
 const Share = () => {
-  const [lockSpoilerPanel, setLockSpoilerPanel] = useState(false);
-  const shareEnabled = isFlagEnabled("sharing");
+	const shareHash = useCallback(() => {
+		return getShareHash(false);
+	}, []);
 
-  const configHash = useCallback(() => {
-    return getShareHash(lockSpoilerPanel);
-  }, [lockSpoilerPanel]);
+	const configHash = shareHash()
+	const config = atob(configHash)
+	return (
+		<>
+			<p>
+				Here you can generate a link to this app with your current spoiler
+				configuration.
+			</p>
 
-  const shareUrl =
-    `${window.location.origin}${window.location.pathname}?lastGame=${localStorage.getItem("lastGame")}#${configHash()}`;
-  return (
-    <>
-      <p>
-        Here you can generate a link to this app with your current spoiler
-        configuration.
-      </p>
-      <Form.Group inline>
-        <label htmlFor={"share-spoiler-toggle"}>
-          Deactivate spoiler configuration panel for people following your
-          shared link.
-        </label>
-        <Form.Checkbox
-          id={"share-spoiler-toggle"}
-          toggle
-          className={"share-spoiler-toggle"}
-          checked={lockSpoilerPanel}
-          onChange={() => setLockSpoilerPanel(!lockSpoilerPanel)}
-        />
-      </Form.Group>
-      {lockSpoilerPanel && (
-        <Message negative>
-          <Icon name="exclamation triangle" />
-          Do not open the link yourself or you will not be able to change any
-          settings anymore
-        </Message>
-      )}
-      <Form>
-        <Form.Group>
-          <Form.Input id={"share-url-input"} width={14} value={shareUrl} />
-          <Form.Button
-            width={2}
-            onClick={() => {
-              (
-                document.getElementById("share-url-input") as HTMLInputElement
-              ).select();
-              document.execCommand("copy");
-            }}
-          >
-            Copy
-          </Form.Button>
-        </Form.Group>
-        {shareEnabled && <UploadForm configHash={configHash()} />}
-      </Form>
-    </>
-  );
+			<Form>
+				<TextArea label="Config" value={config} rows={20} />
+				<Button onClick={() => save(config)}>Save</Button>
+			</Form>
+
+		</>
+	);
 };
 
 export default Share;
